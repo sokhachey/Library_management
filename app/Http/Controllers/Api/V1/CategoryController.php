@@ -34,8 +34,11 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
-        // $category = Category::find($id);
-        // if(!car)
+        $category = Category::find($id);
+        if(!$category){
+            return response()->json(['message' => 'category not found']);
+        }
+        return response()->json($category);
     }
 
     /**
@@ -43,7 +46,14 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $category = Category::find($id);
+        if(!$category){
+            return response()->json(['message' => 'update has error']);
+        }
+        $category->name = $request->name;
+        $category->save();
+        return response()->json($category);
+
     }
 
     /**
@@ -51,6 +61,11 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $category = Category::find($id);
+        if(!$category){
+            return response()->json(['message' => 'delete has error']);
+        }
+        $category->delete();
+        return response()->json($category);
     }
 }
