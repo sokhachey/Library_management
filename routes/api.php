@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\V1\UserController;
+use App\Models\User;
 use App\Http\Controllers\Api\V1\AdminController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\ReportController;
@@ -20,8 +22,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+    
 Route::prefix('v1')->group(function () {
     Route::apiResource('admins', AdminController::class);
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('report', ReportController::class);
+    Route::apiResource('users', UserController::class);
 });
