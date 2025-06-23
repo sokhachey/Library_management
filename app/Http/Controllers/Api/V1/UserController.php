@@ -26,6 +26,7 @@ class UserController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = $request->password;
+        $user->admin_id = $request->admin_id;
         $user->save();
         return response()->json($user, 201);
     }
@@ -54,6 +55,7 @@ class UserController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = $request->password;
+        $user->admin_id = $request->admin_id;
         $user->save();
         return response()->json($user);
     }

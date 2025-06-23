@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -12,7 +13,8 @@ class AdminController extends Controller
      */
     public function index()
     {
-        //
+        $admin = Admin::all();
+        return response()->json($admin);
     }
 
     /**
@@ -20,7 +22,12 @@ class AdminController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $admin = new Admin();
+        $admin->name =  $request->name;
+        $admin->email = $request->email;
+        $admin->password = $request->password;
+        $admin->save();
+        return response()->json($admin);
     }
 
     /**
@@ -28,7 +35,11 @@ class AdminController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $admin = Admin::find($id);
+        if(!$admin){
+            return response()->json(['message' => 'admin not found']);
+        }
+        return response()->json($admin);
     }
 
     /**
@@ -36,7 +47,15 @@ class AdminController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $admin = Admin::find($id);
+        if(!$admin){
+            return response()->json(['message' => 'update admin not found']);
+        }
+        $admin->name = $request->name;
+        $admin->email = $request->email;
+        $admin->password = $request->password;
+        $admin->save();
+        return response()->json($admin);
     }
 
     /**
@@ -44,6 +63,11 @@ class AdminController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $admin = Admin::find($id);
+        if(!$admin){
+            return response()->json(['message' => 'deleted not found']);
+        }
+        $admin->delete();
+        return response()->json($admin);
     }
 }

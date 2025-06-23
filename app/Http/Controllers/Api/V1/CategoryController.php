@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -12,7 +14,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $category = Category::all();
+        return response()->json($category);
     }
 
     /**
@@ -20,7 +23,10 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $category = new Category();
+        $category->name = $request->name;
+        $category->save();
+        return response()->json($category);
     }
 
     /**
@@ -28,7 +34,8 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
-        //
+        // $category = Category::find($id);
+        // if(!car)
     }
 
     /**

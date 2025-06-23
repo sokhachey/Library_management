@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 
 class SupplierController extends Controller
@@ -12,7 +13,8 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        //
+        $supplier = Supplier::all();
+        return response()->json($supplier);
     }
 
     /**
@@ -20,7 +22,10 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $supplier = new Supplier();
+        $supplier->name = $request->name;
+        $supplier->save();
+        return response()->json($supplier, 201);
     }
 
     /**
@@ -28,7 +33,11 @@ class SupplierController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $supplier = Supplier::find($id);
+        if (!$supplier) {
+            return response()->json(['message' => 'supplier not found'], 404);
+        }
+        return response()->json($supplier);
     }
 
     /**
@@ -36,7 +45,13 @@ class SupplierController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $supplier = Supplier::find($id);
+        if (!$supplier) {
+            return response()->json(['message' => 'supplier not found'], 404);
+        }
+        $supplier->name = $request->name;
+        $supplier->save();
+        return response()->json($supplier);
     }
 
     /**
@@ -44,6 +59,11 @@ class SupplierController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $supplier = Supplier::find($id);
+        if (!$supplier) {
+            return response()->json(['message' => 'supplier not found'], 404);
+        }
+        $supplier->delete();
+        return response()->json(['message' => 'supplier deleted successfully'], 204);
     }
 }
