@@ -9,15 +9,9 @@ class Report extends Model
 {
     use HasFactory;
 
-
-    public function admin()
-    {
-        return $this->hasOne(Admin::class);
-    }
-
     public function user()
     {
         return $this->hasMany(User::class);
     }
-    protected $fillable = ['joined_date', 'exits_date', 'admin_id', 'user_id'];
+    protected $fillable = ['joined_date', 'exits_date', 'user_id'];
 }
