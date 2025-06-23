@@ -25,6 +25,7 @@ class BookController extends Controller
         $book = new Book();
         $book->title = $request->title;
         $book->description = $request->description;
+        $book->description = $request->description;
         $book->save();
         return response()->json($book, 201);
     }
