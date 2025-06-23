@@ -3,8 +3,10 @@
 use App\Http\Controllers\Api\V1\UserController;
 use App\Models\User;
 use App\Http\Controllers\Api\V1\AdminController;
+use App\Http\Controllers\Api\V1\BookController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\ReportController;
+use App\Http\Controllers\Api\V1\SupplierController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,4 +30,6 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('report', ReportController::class);
     Route::apiResource('users', UserController::class);
+    Route::apiResource('books', BookController::class);
+    Route::apiResource('suppliers', SupplierController::class);
 });
