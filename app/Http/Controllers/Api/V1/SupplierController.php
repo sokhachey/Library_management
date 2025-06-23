@@ -24,6 +24,8 @@ class SupplierController extends Controller
     {
         $supplier = new Supplier();
         $supplier->name = $request->name;
+        $supplier->address = $request->address;
+        $supplier->email = $request->email;
         $supplier->save();
         return response()->json($supplier, 201);
     }
@@ -50,6 +52,8 @@ class SupplierController extends Controller
             return response()->json(['message' => 'supplier not found'], 404);
         }
         $supplier->name = $request->name;
+        $supplier->address = $request->address;
+        $supplier->email = $request->email;
         $supplier->save();
         return response()->json($supplier);
     }
