@@ -30,8 +30,6 @@ class BookController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
-            'supplier_id' => 'required|exists:suppliers,id',
-            'admin_id' => 'required|exists:admins,id',
         ]);
 
         $book = Book::create($validated);
@@ -75,7 +73,6 @@ class BookController extends Controller
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'supplier_id' => 'required|exists:suppliers,id',
-            'admin_id' => 'required|exists:admins,id',
         ]);
 
         $book->update($validated);

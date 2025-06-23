@@ -31,7 +31,6 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'admin_id' => 'required|exists:admins,id',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -74,12 +73,10 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => "required|email|unique:users,email,{$id}",
             'password' => 'nullable|string|min:6',
-            'admin_id' => 'required|exists:admins,id',
         ]);
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];
-        $user->admin_id = $validated['admin_id'];
 
         if (!empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);

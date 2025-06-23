@@ -25,7 +25,6 @@ class ReportController extends Controller
         $report = new Report();
         $report->joined_date = $request->joined_date;
         $report->exits_date = $request->exits_date;
-        $report->admin_id = $request->admin_id;
         $report->user_id = $request->user_id;
         $report->save();
         return response()->json($report);
@@ -54,7 +53,6 @@ class ReportController extends Controller
         }
         $report->joined_date = $request->joined_date;
         $report->exits_date = $request->exits_date;
-        $report->admin_id = $request->admin_id;
         $report->user_id = $request->user_id;
         $report->save();
         return response()->json($report);
