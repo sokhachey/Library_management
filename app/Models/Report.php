@@ -19,4 +19,5 @@ class Report extends Model
     {
         return $this->hasMany(User::class);
     }
+    protected $fillable = ['joined_date', 'exits_date', 'admin_id', 'user_id'];
 }

@@ -14,4 +14,5 @@ class Supplier extends Model
     {
         return $this->hasMany(Book::class);
     }
+    protected $fillable = ['name', 'address', 'email'];
 }

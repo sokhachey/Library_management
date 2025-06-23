@@ -23,4 +23,8 @@ class Book extends Model
     {
         return $this->hasOne(Admin::class);
     }
+    public function users(){
+        return $this->belongsToMany(User::class);
+    }
+    protected $fillable = ['title', 'description', 'admin_id', 'supplier_id', 'category_id'];
 }

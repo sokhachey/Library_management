@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'admin_id'
     ];
 
     /**
@@ -51,5 +52,9 @@ class User extends Authenticatable
     public function report()
     {
         return $this->hasOne(Report::class);
+    }
+    
+    public function books(){
+        return $this->belongsToMany(User::class);
     }
 }
