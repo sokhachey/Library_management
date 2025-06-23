@@ -14,7 +14,7 @@ class BookController extends Controller
      */
     public function index(): JsonResponse
     {
-        $books = Book::with(['admin', 'supplier', 'category'])->get();
+        $books = Book::with(['supplier', 'category'])->get();
 
         $booksWithNames = $books->map(function ($book) {
             return [
