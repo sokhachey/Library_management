@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -23,10 +23,21 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate input
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:categories,name',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Save to database
         $category = new Category();
         $category->name = $request->name;
         $category->save();
-        return response()->json($category);
+
+        return response()->json($category, 201);
     }
 
     /**
@@ -35,8 +46,8 @@ class CategoryController extends Controller
     public function show(string $id)
     {
         $category = Category::find($id);
-        if(!$category){
-            return response()->json(['message' => 'category not found']);
+        if (!$category) {
+            return response()->json(['message' => 'Category not found'], 404);
         }
         return response()->json($category);
     }
@@ -47,13 +58,23 @@ class CategoryController extends Controller
     public function update(Request $request, string $id)
     {
         $category = Category::find($id);
-        if(!$category){
-            return response()->json(['message' => 'update has error']);
+        if (!$category) {
+            return response()->json(['message' => 'Category not found'], 404);
         }
+
+        // Validate input, ignore current category name for uniqueness
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:categories,name,' . $id,
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
         $category->name = $request->name;
         $category->save();
-        return response()->json($category);
 
+        return response()->json($category);
     }
 
     /**
@@ -62,10 +83,11 @@ class CategoryController extends Controller
     public function destroy(string $id)
     {
         $category = Category::find($id);
-        if(!$category){
-            return response()->json(['message' => 'delete has error']);
+        if (!$category) {
+            return response()->json(['message' => 'Category not found'], 404);
         }
+
         $category->delete();
-        return response()->json($category);
+        return response()->json(['message' => 'Category deleted successfully']);
     }
 }
