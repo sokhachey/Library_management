@@ -14,10 +14,25 @@ class BookController extends Controller
      */
     public function index(): JsonResponse
     {
-        $books = Book::all();
+        $books = Book::with(['supplier', 'category'])->get();
+
+        $booksWithNames = $books->map(function ($book) {
+            return [
+                'id' => $book->id,
+                'title' => $book->title,
+                'description' => $book->description,
+                'supplier_id' => $book->supplier_id,
+                'supplierName' => $book->supplier ? $book->supplier->name : 'N/A',
+                'category_id' => $book->category_id,
+                'categoryName' => $book->category ? $book->category->name : 'N/A',
+                'created_at' => $book->created_at,
+                'updated_at' => $book->updated_at,
+            ];
+        });
+
         return response()->json([
             'message' => 'Books retrieved successfully',
-            'data' => $books
+            'data' => $booksWithNames
         ]);
     }
 
@@ -30,6 +45,7 @@ class BookController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
+            'supplier_id' => 'required|exists:suppliers,id',
         ]);
 
         $book = Book::create($validated);
@@ -45,15 +61,27 @@ class BookController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $book = Book::find($id);
+        $book = Book::with(['supplier', 'category'])->find($id);
 
         if (!$book) {
             return response()->json(['message' => 'Book not found'], 404);
         }
 
+        $bookWithNames = [
+            'id' => $book->id,
+            'title' => $book->title,
+            'description' => $book->description,
+            'supplier_id' => $book->supplier_id,
+            'supplierName' => $book->supplier ? $book->supplier->name : 'N/A',
+            'category_id' => $book->category_id,
+            'categoryName' => $book->category ? $book->category->name : 'N/A',
+            'created_at' => $book->created_at,
+            'updated_at' => $book->updated_at,
+        ];
+
         return response()->json([
             'message' => 'Book retrieved successfully',
-            'data' => $book
+            'data' => $bookWithNames
         ]);
     }
 

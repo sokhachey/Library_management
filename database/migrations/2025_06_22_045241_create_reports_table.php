@@ -15,10 +15,6 @@ return new class extends Migration
             $table->id();
             $table->timestamp('joined_date');
             $table->timestamp('exits_date')->nullable(); // exit might not be set yet
-            $table->foreignId('admin_id')
-                  ->constrained('admins')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->onDelete('cascade')
