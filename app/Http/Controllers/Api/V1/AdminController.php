@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
@@ -13,8 +15,8 @@ class AdminController extends Controller
      */
     public function index()
     {
-        $admin = Admin::all();
-        return response()->json($admin);
+        $admins = Admin::all();
+        return response()->json($admins);
     }
 
     /**
@@ -22,12 +24,25 @@ class AdminController extends Controller
      */
     public function store(Request $request)
     {
+        // Validation
+        $validator = Validator::make($request->all(), [
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:admins,email',
+            'password' => 'required|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Create admin
         $admin = new Admin();
-        $admin->name =  $request->name;
+        $admin->name = $request->name;
         $admin->email = $request->email;
-        $admin->password = $request->password;
+        $admin->password = Hash::make($request->password);
         $admin->save();
-        return response()->json($admin);
+
+        return response()->json($admin, 201);
     }
 
     /**
@@ -36,8 +51,8 @@ class AdminController extends Controller
     public function show(string $id)
     {
         $admin = Admin::find($id);
-        if(!$admin){
-            return response()->json(['message' => 'admin not found']);
+        if (!$admin) {
+            return response()->json(['message' => 'Admin not found'], 404);
         }
         return response()->json($admin);
     }
@@ -48,13 +63,29 @@ class AdminController extends Controller
     public function update(Request $request, string $id)
     {
         $admin = Admin::find($id);
-        if(!$admin){
-            return response()->json(['message' => 'update admin not found']);
+        if (!$admin) {
+            return response()->json(['message' => 'Admin not found'], 404);
         }
+
+        // Validation
+        $validator = Validator::make($request->all(), [
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:admins,email,' . $id,
+            'password' => 'nullable|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Update fields
         $admin->name = $request->name;
         $admin->email = $request->email;
-        $admin->password = $request->password;
+        if ($request->filled('password')) {
+            $admin->password = Hash::make($request->password);
+        }
         $admin->save();
+
         return response()->json($admin);
     }
 
@@ -64,10 +95,11 @@ class AdminController extends Controller
     public function destroy(string $id)
     {
         $admin = Admin::find($id);
-        if(!$admin){
-            return response()->json(['message' => 'deleted not found']);
+        if (!$admin) {
+            return response()->json(['message' => 'Admin not found'], 404);
         }
+
         $admin->delete();
-        return response()->json($admin);
+        return response()->json(['message' => 'Admin deleted successfully']);
     }
 }
