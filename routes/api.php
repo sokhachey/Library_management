@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\AdminController;
 use App\Http\Controllers\Api\V1\BookController;
 use App\Http\Controllers\Api\V1\BorrowingController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\SupplierController;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-    
+
 Route::prefix('v1')->group(function () {
     Route::apiResource('admins', AdminController::class);
     Route::apiResource('categories', CategoryController::class);
@@ -34,4 +35,5 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('books', BookController::class);
     Route::apiResource('suppliers', SupplierController::class);
     Route::apiResource('borrowings', BorrowingController::class);
+    Route::get('/dashboard', [DashboardController::class, 'index']);
 });
