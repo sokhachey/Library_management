@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 
@@ -25,17 +26,17 @@ class UserController extends Controller
     /**
      * Store a newly created user in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreUserRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
+        // Get validated data
+        $validated = $request->validated();
+
+        // Create user with hashed password
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
         ]);
-
-        $validated['password'] = Hash::make($validated['password']);
-
-        $user = User::create($validated);
 
         return response()->json([
             'message' => 'User created successfully',
@@ -62,27 +63,29 @@ class UserController extends Controller
     /**
      * Update the specified user in storage.
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(UpdateUserRequest $request, string $id): JsonResponse
     {
         $user = User::find($id);
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => "required|email|unique:users,email,{$id}",
-            'password' => 'nullable|string|min:6',
-        ]);
+        // Get validated data
+        $validated = $request->validated();
 
-        $user->name = $validated['name'];
-        $user->email = $validated['email'];
+        // Prepare data for update
+        $data = [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ];
 
+        // Hash password if provided
         if (!empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
+            $data['password'] = Hash::make($validated['password']);
         }
 
-        $user->save();
+        // Update user
+        $user->update($data);
 
         return response()->json([
             'message' => 'User updated successfully',

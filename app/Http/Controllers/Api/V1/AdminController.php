@@ -3,96 +3,99 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreAdminRequest;
+use App\Http\Requests\UpdateAdminRequest;
 use App\Models\Admin;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $admins = Admin::all();
-        return response()->json($admins);
+        return response()->json([
+            'message' => 'Admins retrieved successfully',
+            'data' => $admins
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreAdminRequest $request): JsonResponse
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:admins,email',
-            'password' => 'required|string|min:6',
+        // Get validated data
+        $validated = $request->validated();
+
+        // Create admin with hashed password
+        $admin = Admin::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        // Create admin
-        $admin = new Admin();
-        $admin->name = $request->name;
-        $admin->email = $request->email;
-        $admin->password = Hash::make($request->password);
-        $admin->save();
-
-        return response()->json($admin, 201);
+        return response()->json([
+            'message' => 'Admin created successfully',
+            'data' => $admin
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
         $admin = Admin::find($id);
         if (!$admin) {
             return response()->json(['message' => 'Admin not found'], 404);
         }
-        return response()->json($admin);
+        return response()->json([
+            'message' => 'Admin retrieved successfully',
+            'data' => $admin
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateAdminRequest $request, string $id): JsonResponse
     {
         $admin = Admin::find($id);
         if (!$admin) {
             return response()->json(['message' => 'Admin not found'], 404);
         }
 
-        // Validation
-        $validator = Validator::make($request->all(), [
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:admins,email,' . $id,
-            'password' => 'nullable|string|min:6',
+        // Get validated data
+        $validated = $request->validated();
+
+        // Prepare data for update
+        $data = [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ];
+
+        // Hash password if provided
+        if (isset($validated['password'])) {
+            $data['password'] = Hash::make($validated['password']);
+        }
+
+        // Update admin
+        $admin->update($data);
+
+        return response()->json([
+            'message' => 'Admin updated successfully',
+            'data' => $admin
         ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        // Update fields
-        $admin->name = $request->name;
-        $admin->email = $request->email;
-        if ($request->filled('password')) {
-            $admin->password = Hash::make($request->password);
-        }
-        $admin->save();
-
-        return response()->json($admin);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
         $admin = Admin::find($id);
         if (!$admin) {

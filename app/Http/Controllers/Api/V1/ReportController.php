@@ -3,84 +3,104 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreReportRequest;
+use App\Http\Requests\UpdateReportRequest;
 use App\Models\Report;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
 
 class ReportController extends Controller
 {
-    public function index()
+    /**
+     * Display a listing of the reports.
+     */
+    public function index(): JsonResponse
     {
         $reports = Report::with('user:name,id')->get();
-        return response()->json(['data' => $reports]);
+        return response()->json([
+            'message' => 'Reports retrieved successfully',
+            'data' => $reports
+        ]);
     }
 
-    public function store(Request $request)
+    /**
+     * Store a newly created report in storage.
+     */
+    public function store(StoreReportRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'joined_date' => 'required|date',
-            'exits_date' => 'nullable|date|after_or_equal:joined_date',
-            'user_id' => 'required|exists:users,id',
-        ]);
+        // Get validated data
+        $validated = $request->validated();
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+        // Create report
+        $report = Report::create($validated);
 
-        $report = Report::create([
-            'user_id' => $request->user_id,
-            'joined_date' => $request->joined_date,
-            'exits_date' => $request->exits_date,
-        ]);
-
+        // Load user relationship
         $report->load('user:name,id');
-        return response()->json(['data' => $report], 201);
+
+        return response()->json([
+            'message' => 'Report created successfully',
+            'data' => $report
+        ], 201);
     }
 
-    public function show(string $id)
+    /**
+     * Display the specified report.
+     */
+    public function show(string $id): JsonResponse
     {
         $report = Report::with('user:name,id')->find($id);
+
         if (!$report) {
             return response()->json(['message' => 'Report not found'], 404);
         }
-        return response()->json(['data' => $report]);
+
+        return response()->json([
+            'message' => 'Report retrieved successfully',
+            'data' => $report
+        ]);
     }
 
-    public function update(Request $request, string $id)
+    /**
+     * Update the specified report in storage.
+     */
+    public function update(UpdateReportRequest $request, string $id): JsonResponse
     {
         $report = Report::find($id);
+
         if (!$report) {
             return response()->json(['message' => 'Report not found'], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'joined_date' => 'required|date',
-            'exits_date' => 'nullable|date|after_or_equal:joined_date',
-            'user_id' => 'required|exists:users,id',
-        ]);
+        // Get validated data
+        $validated = $request->validated();
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+        // Update report
+        $report->update($validated);
 
-        $report->update([
-            'user_id' => $request->user_id,
-            'joined_date' => $request->joined_date,
-            'exits_date' => $request->exits_date,
-        ]);
-
+        // Load user relationship
         $report->load('user:name,id');
-        return response()->json(['data' => $report]);
+
+        return response()->json([
+            'message' => 'Report updated successfully',
+            'data' => $report
+        ]);
     }
 
-    public function destroy(string $id)
+    /**
+     * Remove the specified report from storage.
+     */
+    public function destroy(string $id): JsonResponse
     {
         $report = Report::find($id);
+
         if (!$report) {
             return response()->json(['message' => 'Report not found'], 404);
         }
 
         $report->delete();
-        return response()->json(['data' => ['message' => 'Report deleted successfully']]);
+
+        return response()->json([
+            'message' => 'Report deleted successfully',
+            'data' => []
+        ], 200);
     }
 }

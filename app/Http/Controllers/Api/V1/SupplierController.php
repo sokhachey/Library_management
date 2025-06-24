@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreSupplierRequest;
+use App\Http\Requests\UpdateSupplierRequest;
 use App\Models\Supplier;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class SupplierController extends Controller
@@ -25,14 +26,12 @@ class SupplierController extends Controller
     /**
      * Store a newly created supplier in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreSupplierRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'email' => 'required|email|unique:suppliers,email',
-        ]);
+        // Get validated data
+        $validated = $request->validated();
 
+        // Create supplier
         $supplier = Supplier::create($validated);
 
         return response()->json([
@@ -61,7 +60,7 @@ class SupplierController extends Controller
     /**
      * Update the specified supplier in storage.
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(UpdateSupplierRequest $request, string $id): JsonResponse
     {
         $supplier = Supplier::find($id);
 
@@ -69,12 +68,10 @@ class SupplierController extends Controller
             return response()->json(['message' => 'Supplier not found'], 404);
         }
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'email' => "required|email|unique:suppliers,email,{$id}",
-        ]);
+        // Get validated data
+        $validated = $request->validated();
 
+        // Update supplier
         $supplier->update($validated);
 
         return response()->json([
