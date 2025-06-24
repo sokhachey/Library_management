@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -21,21 +21,13 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        // Validate input
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:categories,name',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+        // Get validated data
+        $validated = $request->validated();
 
         // Save to database
-        $category = new Category();
-        $category->name = $request->name;
-        $category->save();
+        $category = Category::create($validated);
 
         return response()->json($category, 201);
     }
@@ -55,24 +47,17 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCategoryRequest $request, string $id)
     {
         $category = Category::find($id);
         if (!$category) {
             return response()->json(['message' => 'Category not found'], 404);
         }
 
-        // Validate input, ignore current category name for uniqueness
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:categories,name,' . $id,
-        ]);
+        // Get validated data
+        $validated = $request->validated();
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $category->name = $request->name;
-        $category->save();
+        $category->update($validated);
 
         return response()->json($category);
     }
