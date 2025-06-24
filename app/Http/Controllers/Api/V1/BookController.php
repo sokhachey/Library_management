@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreBookRequest;
+use App\Http\Requests\UpdateBookRequest;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -39,15 +41,9 @@ class BookController extends Controller
     /**
      * Store a newly created book in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreBookRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'supplier_id' => 'required|exists:suppliers,id',
-        ]);
-
+        $validated = $request->validated();
         $book = Book::create($validated);
 
         return response()->json([
@@ -88,7 +84,7 @@ class BookController extends Controller
     /**
      * Update the specified book in storage.
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(UpdateBookRequest $request, string $id): JsonResponse
     {
         $book = Book::find($id);
 
@@ -96,15 +92,9 @@ class BookController extends Controller
             return response()->json(['message' => 'Book not found'], 404);
         }
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'supplier_id' => 'required|exists:suppliers,id',
-        ]);
-
+        $validated = $request->validated();
         $book->update($validated);
-
+        
         return response()->json([
             'message' => 'Book updated successfully',
             'data' => $book
@@ -123,7 +113,6 @@ class BookController extends Controller
         }
 
         $book->delete();
-
         return response()->json(['message' => 'Book deleted successfully'], 200);
     }
 }

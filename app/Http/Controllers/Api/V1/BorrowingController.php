@@ -22,14 +22,7 @@ class BorrowingController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'book_id' => 'required|exists:books,id',
-            'borrow_date' => 'nullable|date',
-            'return_date' => 'nullable|date',
-            'status' => 'nullable|string|in:borrowed,returned,late'
-        ]);
-
+        $validated = $request->validated();
         $borrowing = Borrowing::create([
             'user_id'     => $validated['user_id'],
             'book_id'     => $validated['book_id'],
@@ -66,14 +59,7 @@ class BorrowingController extends Controller
             return response()->json(['message' => 'Borrowing not found'], 404);
         }
 
-        $validated = $request->validate([
-            'user_id'     => 'sometimes|exists:users,id',
-            'book_id'     => 'sometimes|exists:books,id',
-            'borrow_date' => 'nullable|date',
-            'return_date' => 'nullable|date',
-            'status'      => 'nullable|string|in:borrowed,returned,late'
-        ]);
-
+        $validated = $request->validated();
         $borrowing->update($validated);
 
         return response()->json($borrowing->load(['user', 'book']));
@@ -89,9 +75,7 @@ class BorrowingController extends Controller
         if (!$borrowing) {
             return response()->json(['message' => 'Borrowing not found'], 404);
         }
-
         $borrowing->delete();
-
         return response()->json(['message' => 'Borrowing deleted successfully']);
     }
 }
