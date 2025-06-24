@@ -16,6 +16,16 @@ class Book extends Model
      */
     protected $fillable = ['title', 'description', 'supplier_id', 'category_id'];
 
+    public function getCreatedAtAttribute($value)
+    {
+        return date('d/m/y', strtotime($value));
+    }
+
+    public function getUpdatedAtAttribute($value)
+    {
+        return date('d/m/y', strtotime($value));
+    }
+
 
     /**
      * Get the supplier that owns the book.

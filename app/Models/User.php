@@ -42,12 +42,24 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function getCreatedAtAttribute($value)
+    {
+        return date('d/m/y', strtotime($value));
+    }
+
+    public function getUpdatedAtAttribute($value)
+    {
+        return date('d/m/y', strtotime($value));
+    }
+
     public function report()
     {
         return $this->hasOne(Report::class);
     }
-    
-    public function books(){
+
+    public function books()
+    {
         return $this->belongsToMany(User::class);
     }
 }

@@ -15,4 +15,14 @@ class Supplier extends Model
         return $this->hasMany(Book::class);
     }
     protected $fillable = ['name', 'address', 'email'];
+
+    public function getCreatedAtAttribute($value)
+    {
+        return date('d/m/y', strtotime($value));
+    }
+
+    public function getUpdatedAtAttribute($value)
+    {
+        return date('d/m/y', strtotime($value));
+    }
 }

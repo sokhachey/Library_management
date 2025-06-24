@@ -16,6 +16,22 @@ class Borrowing extends Model
         'return_date',
         'status',
     ];
+    public function getCreatedAtAttribute($value) {
+        return date('d/m/y', strtotime($value));
+    }
+
+    public function getUpdatedAtAttribute($value)
+    {
+        return date('d/m/y', strtotime($value));
+    }
+
+    public function getBorrowDate($value){
+        return date('d/m/y', strtotime($value));
+    }
+
+    public function getReturnDate($value){
+        return date('d/m/y', strtotime($value));
+    }
 
     public function user()
     {
