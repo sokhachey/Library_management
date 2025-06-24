@@ -9,9 +9,10 @@ class Report extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['joined_date', 'exits_date', 'user_id'];
+
     public function user()
     {
-        return $this->hasMany(User::class);
+        return $this->belongsTo(User::class); // ✅ Correct relationship
     }
-    protected $fillable = ['joined_date', 'exits_date', 'user_id'];
 }

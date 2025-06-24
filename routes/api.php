@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::prefix('v1')->group(function () {
     Route::apiResource('admins', AdminController::class);
     Route::apiResource('categories', CategoryController::class);
-    Route::apiResource('report', ReportController::class);
+    Route::apiResource('reports', ReportController::class);
     Route::apiResource('users', UserController::class);
     Route::apiResource('books', BookController::class);
     Route::apiResource('suppliers', SupplierController::class);
