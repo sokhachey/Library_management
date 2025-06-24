@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\UserController;
 use App\Models\User;
 use App\Http\Controllers\Api\V1\AdminController;
 use App\Http\Controllers\Api\V1\BookController;
+use App\Http\Controllers\Api\V1\BorrowingController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\SupplierController;
@@ -32,4 +33,5 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('users', UserController::class);
     Route::apiResource('books', BookController::class);
     Route::apiResource('suppliers', SupplierController::class);
+    Route::apiResource('borrowings', BorrowingController::class);
 });
