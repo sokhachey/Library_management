@@ -30,7 +30,7 @@ class UserController extends Controller
     {
         // Get validated data
         $validated = $request->validated();
-
+        
         // Create user with hashed password
         $user = User::create([
             'name' => $validated['name'],

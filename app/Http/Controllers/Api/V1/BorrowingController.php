@@ -3,26 +3,23 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreBorrowingRequest;
+use App\Http\Requests\UpdateBorrowingRequest;
 use App\Models\Borrowing;
 use Illuminate\Http\Request;
 
 class BorrowingController extends Controller
 {
-    /**
-     * Display a listing of borrowings with related user and book.
-     */
     public function index()
     {
         $borrowings = Borrowing::with(['user', 'book'])->get();
         return response()->json($borrowings);
     }
 
-    /**
-     * Store a new borrowing record.
-     */
-    public function store(Request $request)
+    public function store(StoreBorrowingRequest $request)
     {
         $validated = $request->validated();
+
         $borrowing = Borrowing::create([
             'user_id'     => $validated['user_id'],
             'book_id'     => $validated['book_id'],
@@ -31,12 +28,9 @@ class BorrowingController extends Controller
             'status'      => $validated['status'] ?? 'borrowed',
         ]);
 
-        return response()->json($borrowing->load(['user', 'book']), 201);
+        return response()->json($borrowing->load(['user', 'book']), 201); // ✅ 201 created
     }
 
-    /**
-     * Display a specific borrowing.
-     */
     public function show($id)
     {
         $borrowing = Borrowing::with(['user', 'book'])->find($id);
@@ -48,10 +42,7 @@ class BorrowingController extends Controller
         return response()->json($borrowing);
     }
 
-    /**
-     * Update a specific borrowing.
-     */
-    public function update(Request $request, $id)
+    public function update(UpdateBorrowingRequest $request, $id)
     {
         $borrowing = Borrowing::find($id);
 
@@ -59,15 +50,11 @@ class BorrowingController extends Controller
             return response()->json(['message' => 'Borrowing not found'], 404);
         }
 
-        $validated = $request->validated();
-        $borrowing->update($validated);
+        $borrowing->update($request->validated());
 
         return response()->json($borrowing->load(['user', 'book']));
     }
 
-    /**
-     * Delete a specific borrowing.
-     */
     public function destroy($id)
     {
         $borrowing = Borrowing::find($id);
@@ -75,7 +62,9 @@ class BorrowingController extends Controller
         if (!$borrowing) {
             return response()->json(['message' => 'Borrowing not found'], 404);
         }
+
         $borrowing->delete();
+
         return response()->json(['message' => 'Borrowing deleted successfully']);
     }
 }
